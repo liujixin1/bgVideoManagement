@@ -6,16 +6,16 @@ Page({
    * 页面的初始数据
    */
   data: {
-
+    modification: false,
     author: '请选择分类',
     form: {
-      sum: 0,
-      checked: false,
+      name: '',
+      banner: false,
       show: false,
       img: '',
       uploadImg: true,
-      // banImg: '',
-      // bannerImg: true,
+      video: '',
+      videoStatus: true,
       author: ''
     },
 
@@ -29,20 +29,20 @@ Page({
     })
     console.log(that.data.form)
   },
-  //删除banner图片
-  // remBanImg() {
-  //   const that = this;
-  //   that.setData({
-  //     [`form.bannerImg`]: true,
-  //     [`form.banImg`]: ''
-  //   })
-  //   console.log(that.data.form)
-  // },
+  // 删除视频
+  remVideo() {
+    const that = this;
+    that.setData({
+      [`form.videoStatus`]: true,
+      [`form.video`]: ''
+    })
+    console.log(that.data.form)
+  },
   //轮播
   switchChange: function (e) {
     const that = this;
     that.setData({
-      ['form.checked']: e.detail.value
+      ['form.banner']: e.detail.value
     })
   },
   //显示
@@ -64,6 +64,7 @@ Page({
           title: '上传中...',
         })
         console.log(res, 11111)
+        let fileName = 'coverList/';
         const tempFilePaths = res.tempFilePaths[0];
         //声明图片名字为时间戳和随机数拼接成的，尽量确保唯一性
         let time = Date.now() + parseInt(Math.random() * 999) + parseInt(Math.random() * 2222);
@@ -72,7 +73,7 @@ Page({
         //拼接成图片名
         let keepname = time + '.' + fileExt;
         wx.cloud.uploadFile({
-          cloudPath: keepname,
+          cloudPath: fileName + keepname,
           filePath: tempFilePaths, // 文件路径
         }).then(res => {
           // get resource ID
@@ -89,43 +90,48 @@ Page({
       }
     })
   },
-  //上传banner图片
-  // uploadBanImg() {
-  //   const that = this;
-  //   wx.chooseImage({
-  //     count: 1,
-  //     success: function (res) {
-  //       wx.showLoading({
-  //         title: '上传中...',
-  //       })
-  //       console.log(res, 11111)
-  //       const tempFilePaths = res.tempFilePaths[0];
-  //       //声明图片名字为时间戳和随机数拼接成的，尽量确保唯一性
-  //       let time = Date.now() + parseInt(Math.random() * 999) + parseInt(Math.random() * 2222);
-  //       //拓展名
-  //       var fileExt = tempFilePaths.replace(/.+\./, "");
-  //       //拼接成图片名
-  //       let keepname = time + '.' + fileExt;
-  //       wx.cloud.uploadFile({
-  //         cloudPath: keepname,
-  //         filePath: tempFilePaths, // 文件路径
-  //       }).then(res => {
-  //         // get resource ID
-  //         console.log(res.fileID)
-  //         wx.hideLoading()
-  //         that.setData({
+  // 上传视频
+  uploadVideo() {
+    const that = this;
+    wx.chooseVideo({
+      sourceType: ['album', 'camera'],
+      maxDuration: 60,
+      camera: 'back',
+      success: function (res) {
+        wx.showLoading({
+          title: '上传中...',
+        })
+        console.log(res, 11111)
+        let fileName = 'videoList/';
+        let videoSrc = 'https://636c-cloud-kf4kf-1300208308.tcb.qcloud.la/videoList/';
+        const tempFilePaths = res.tempFilePath;
+        //声明图片名字为时间戳和随机数拼接成的，尽量确保唯一性
+        let time = Date.now() + parseInt(Math.random() * 999) + parseInt(Math.random() * 2222);
+        //拓展名
+        var fileExt = tempFilePaths.replace(/.+\./, "");
+        //拼接成图片名
+        let keepname = time + '.' + fileExt;
+        console.log(keepname, 9999)
+        wx.cloud.uploadFile({
+          cloudPath: fileName + keepname,
+          filePath: tempFilePaths, // 文件路径
+        }).then(res => {
+          // get resource ID
+          console.log(res.fileID)
+          wx.hideLoading()
+          that.setData({
 
-  //           [`form.bannerImg`]: false,
-  //           [`form.banImg`]: res.fileID
+            [`form.videoStatus`]: false,
+            [`form.video`]: videoSrc + keepname
 
-  //         })
-  //       }).catch(error => {
-  //         // handle error
-  //       })
+          })
+        }).catch(error => {
+          // handle error
+        })
 
-  //     }
-  //   })
-  // },
+      }
+    })
+  },
 
   //获取文章字
   getName(e) {
@@ -142,10 +148,10 @@ Page({
     })
   },
   //测试人数
-  getsum(e) {
+  getName(e) {
     const that = this;
     that.setData({
-      ['form.sum']: e.detail.value
+      ['form.name']: e.detail.value
     })
   },
   //获取ID
@@ -161,46 +167,41 @@ Page({
     const that = this;
     const form = that.data.form;
 
-    if (form.img != ''&&form.author != '') {
+    if (form.img != '' && form.author != '') {
       if (that.data.modification) {
         wx.showLoading({
           title: '加载中...',
         })
         db.collection('test').doc(that.data.form._id).update({
-          data: {
+            data: {
 
-            sum: form.sum,
-            img: form.img,
-            // banImg: form.banImg,
-            author: form.author,
-            checked: form.checked,
-            show: form.show,
-            banner: form.checked,
-            status: 1,
-            date: new Date()
-          }
+              name: form.name,
+              img: form.img,
+              video: form.video,
+              author: form.author,
+              show: form.show,
+              banner: form.banner,
+              date: new Date()
+            },
 
-        })
-        .then(res => {
-          console.log(88)
-          wx.navigateTo({
-            url: '/pages/index/index?id=1'
           })
-          wx.hideLoading()
+          .then(res => {
+            console.log(88)
+            wx.navigateTo({
+              url: '/pages/index/index?id=1'
+            })
+            wx.hideLoading()
 
-        })
+          })
       } else {
         db.collection('test').add({
           data: {
-            author: form.author,
-            sum: form.sum,
+            name: form.name,
             img: form.img,
-            // banImg: form.banImg,
-            checked: form.checked,
+            video: form.video,
+            author: form.author,
             show: form.show,
-            banner: form.checked,
-            testList: form.testList,
-            status: 1,
+            banner: form.banner,
             date: new Date()
           }
         }).then(res => {
@@ -211,7 +212,7 @@ Page({
           wx.hideLoading()
 
         })
-       
+
       }
 
     } else {
@@ -225,20 +226,44 @@ Page({
   opction() {
     const that = this;
     wx.showActionSheet({
-      itemList: ['生肖', '清新'],
+      itemList: ['推荐', '心情', '动物', '励志', '动漫', '风景'],
       success(res) {
         let author = '';
         switch (res.tapIndex + 1) {
           case 1:
             that.setData({
               ['form.author']: res.tapIndex + 1,
-              author: '生肖'
+              author: '推荐'
             })
             return;
           case 2:
             that.setData({
               ['form.author']: res.tapIndex + 1,
-              author: '清新'
+              author: '心情'
+            })
+            return;
+          case 3:
+            that.setData({
+              ['form.author']: res.tapIndex + 1,
+              author: '动物'
+            })
+            return;
+          case 4:
+            that.setData({
+              ['form.author']: res.tapIndex + 1,
+              author: '励志'
+            })
+            return;
+          case 5:
+            that.setData({
+              ['form.author']: res.tapIndex + 1,
+              author: '动漫'
+            })
+            return;
+          case 6:
+            that.setData({
+              ['form.author']: res.tapIndex + 1,
+              author: '风景'
             })
             return;
         }
@@ -257,47 +282,61 @@ Page({
     wx.showLoading({
       title: '加载中...',
     })
-    // wx.loadFontFace({
-    //   family: 'Pacifico',
-    //   source: 'url("https://sungd.github.io/Pacifico.ttf")',
-    //   success: console.log
-    // })
+
     if (options.id) {
       db.collection('test').doc(options.id).get().then(res => {
-        console.log(res)
-
         wx.hideLoading()
         that.setData({
           form: res.data,
           modification: true
         })
-        // if (res.data.img) {
-        //   that.setData({
-        //     [`form.uploadImg`]: false,
-        //   })
-        // } else {
-        //   that.setData({
-        //     [`form.uploadImg`]: true,
-        //   })
-        // }
-        // if (res.data.banImg) {
-        //   that.setData({
-        //     [`form.bannerImg`]: false,
-        //   })
-        // } else {
-        //   that.setData({
-        //     [`form.bannerImg`]: true,
-        //   })
-        // }
+        if (res.data.img) {
+          that.setData({
+            [`form.uploadImg`]: false
+          })
+        } else {
+          that.setData({
+            [`form.uploadImg`]: true
+          })
+        }
+        if (res.data.video) {
+          that.setData({
+            [`form.videoStatus`]: false
+          })
+        } else {
+          that.setData({
+            [`form.videoStatus`]: true
+          })
+        }
         switch (res.data.author) {
           case 1:
             that.setData({
-              author: '生肖'
+              author: '推荐'
             })
             return;
           case 2:
             that.setData({
-              author: '清新'
+              author: '心情'
+            })
+            return;
+          case 3:
+            that.setData({
+              author: '动物'
+            })
+            return;
+          case 4:
+            that.setData({
+              author: '励志'
+            })
+            return;
+          case 5:
+            that.setData({
+              author: '动漫'
+            })
+            return;
+          case 6:
+            that.setData({
+              author: '风景'
             })
             return;
 

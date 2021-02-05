@@ -167,3 +167,9 @@
   background: red;
   font-size: 24rpx;
 }
+.name{
+  border: 1rpx solid #eee;
+  padding: 10rpx;
+  box-sizing: border-box;
+  height: 100rpx;
+}

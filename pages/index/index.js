@@ -73,7 +73,6 @@ Page({
 
       case '1':
         db.collection('test').where({
-          status: 1,
           banner: false
         }).skip(page * PAGE).limit(PAGE).orderBy('date', 'desc').get().then(res => {
           res.data.forEach((data, index) => {
