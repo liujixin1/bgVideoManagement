@@ -26,7 +26,10 @@
       <label>标题</label>
       <textarea class="name" value="{{form.name}}" placeholder="请输标题" bindinput='getName'></textarea >
     </view>
-
+    <view class="item">
+      <label>URl</label>
+      <textarea class="name" value="{{form.website}}" placeholder="请输入地址" bindinput='getUrl'></textarea >
+    </view>
     <view class="item">
       <label>轮播</label>
       <switch class="switch" checked='{{form.banner}}' bindchange="switchChange" />

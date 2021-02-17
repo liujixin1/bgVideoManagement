@@ -16,7 +16,9 @@ Page({
       uploadImg: true,
       video: '',
       videoStatus: true,
-      author: ''
+      author: '',   
+      website:''
+
     },
 
   },
@@ -141,11 +143,12 @@ Page({
     })
   },
   //获取描述
-  getMessage(e) {
+  getUrl(e) {
     const that = this;
     that.setData({
-      ['form.message']: e.detail.value
+      ['form.website']: e.detail.value
     })
+    console.log(e,9999)
   },
   //测试人数
   getName(e) {
@@ -181,13 +184,14 @@ Page({
               author: form.author,
               show: form.show,
               banner: form.banner,
+              website:form.website,
               date: new Date()
             },
 
           })
           .then(res => {
             console.log(88)
-            wx.navigateTo({
+            wx.redirectTo({
               url: '/pages/index/index?id=1'
             })
             wx.hideLoading()
@@ -202,11 +206,12 @@ Page({
             author: form.author,
             show: form.show,
             banner: form.banner,
+            website:form.website,
             date: new Date()
           }
         }).then(res => {
           console.log(99)
-          wx.navigateTo({
+          wx.redirectTo({
             url: '/pages/index/index?id=1'
           })
           wx.hideLoading()
@@ -226,7 +231,7 @@ Page({
   opction() {
     const that = this;
     wx.showActionSheet({
-      itemList: ['推荐', '心情', '动物', '励志', '动漫', '风景'],
+      itemList: ['推荐', '心情', '明星', '励志', '动漫', '风景'],
       success(res) {
         let author = '';
         switch (res.tapIndex + 1) {
@@ -245,7 +250,7 @@ Page({
           case 3:
             that.setData({
               ['form.author']: res.tapIndex + 1,
-              author: '动物'
+              author: '明星'
             })
             return;
           case 4:
@@ -321,7 +326,7 @@ Page({
             return;
           case 3:
             that.setData({
-              author: '动物'
+              author: '明星'
             })
             return;
           case 4:
